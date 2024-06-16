@@ -1,8 +1,8 @@
-const postPredictHandler = require('./handler');
+const { postPredictHandler, getPredictionHistories } = require('./handler');
 
 const routes = [
-    {
-        path: '/predict',
+    
+        {path: '/predict',
         method: 'POST',
         handler: postPredictHandler,
         options: {
@@ -11,8 +11,13 @@ const routes = [
                 maxBytes: 1000000,
                 multipart: { output: 'stream' }
             }
+        }},
+        {
+            path: '/predict/histories',
+            method: 'GET',
+            handler: getPredictionHistories
         }
-    }
+    
 ];
 
 module.exports = routes;

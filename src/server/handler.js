@@ -3,6 +3,32 @@ const crypto = require('crypto');
 const Boom = require('@hapi/boom');
 const storeData = require('../services/storeData');
 
+const { Firestore } = require('@google-cloud/firestore');
+
+const getPredictionHistories = async (request, h) => {
+    const db = new Firestore({projectId: 'submissionmlgc-katrinagisella'});
+    const predictCollection = db.collection('predictions');
+
+    try {
+        const snapshot = await predictCollection.get();
+        const histories = snapshot.docs.map(doc => ({
+            id: doc.id,
+            history: doc.data()
+        }));
+
+        return h.response({
+            status: 'success',
+            data: histories
+        });
+    } catch (error) {
+        console.error('Error fetching prediction histories:', error);
+        return h.response({
+            status: 'fail',
+            message: 'Failed to fetch prediction histories'
+        }).code(500);
+    }
+};
+
 async function postPredictHandler(request, h) {
     const { image } = request.payload;
 
@@ -39,5 +65,5 @@ async function postPredictHandler(request, h) {
     }
 }
 
-module.exports = postPredictHandler;
+module.exports = {postPredictHandler, getPredictionHistories};
 
